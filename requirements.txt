@@ -9,11 +9,11 @@ torchvision>=0.15.0
 # Speech-to-text
 openai-whisper
 
-# Voice cloning
-TTS>=0.22.0
+# Text-to-speech (Microsoft Neural TTS, Python 3.12 compatible)
+edge-tts>=6.1.0
 
 # Translation
-googletrans==4.0.0rc1          # fallback
+deep-translator>=1.11.4        # fallback (no httpx conflicts)
 sentencepiece                  # IndicTrans2 tokenizer dep
 sacremoses
 transformers>=4.30.0

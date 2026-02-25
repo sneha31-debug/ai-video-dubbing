@@ -1,16 +1,19 @@
 """
-Step 4: Generate Hindi audio using Coqui XTTS v2 voice cloning.
+Step 4: Generate Hindi audio using edge-tts (Microsoft Neural TTS).
 
-The original speaker's voice is cloned from the extracted clip audio,
-then used to speak the Hindi translated text. If the resulting audio
-is longer than the clip duration, it is time-stretched to fit.
+Uses Microsoft's free edge-tts library (hi-IN-SwaraNeural voice) to
+synthesize the Hindi translated text. Works on any Python version.
+If the resulting audio is longer than the clip duration, it is
+time-stretched to fit.
 
 Usage:
-    python scripts/04_voice_clone.py
+    python scripts/voice_clone.py
+    pip install edge-tts  (already in requirements.txt)
 """
 
 import os
 import argparse
+import asyncio
 import yaml
 
 from utils.audio_utils import get_audio_duration, time_stretch_audio
@@ -21,25 +24,31 @@ def load_config(path="config.yaml"):
         return yaml.safe_load(f)
 
 
-def generate_hindi_audio(hindi_text: str, speaker_wav: str, output_path: str, model_name: str, language: str):
-    from TTS.api import TTS
-    import torch
+async def _synthesize_edge_tts(text: str, voice: str, output_mp3: str):
+    import edge_tts
+    communicate = edge_tts.Communicate(text, voice)
+    await communicate.save(output_mp3)
 
-    device = "cuda" if torch.cuda.is_available() else "cpu"
-    print(f"Loading XTTS v2 on: {device}")
 
-    tts = TTS(model_name).to(device)
-    tts.tts_to_file(
-        text=hindi_text,
-        speaker_wav=speaker_wav,
-        language=language,
-        file_path=output_path
-    )
+def generate_hindi_audio(hindi_text: str, output_path: str, voice: str = "hi-IN-SwaraNeural"):
+    """Synthesize Hindi text to audio using Microsoft edge-tts."""
+    import soundfile as sf
+    import numpy as np
+
+    # edge-tts outputs MP3; convert to WAV via pydub
+    mp3_path = output_path.replace(".wav", "_tmp.mp3")
+    asyncio.run(_synthesize_edge_tts(hindi_text, voice, mp3_path))
+
+    from pydub import AudioSegment
+    audio = AudioSegment.from_mp3(mp3_path)
+    audio = audio.set_frame_rate(22050).set_channels(1)
+    audio.export(output_path, format="wav")
+    os.remove(mp3_path)
     print(f"Hindi audio saved: {output_path}")
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Step 4: Voice cloning with XTTS v2")
+    parser = argparse.ArgumentParser(description="Step 4: Hindi TTS with edge-tts")
     parser.add_argument("--config", type=str, default="config.yaml")
     args = parser.parse_args()
 
@@ -51,21 +60,20 @@ def main():
     final_hindi_wav = os.path.join(cfg["output"]["audio_dir"], "hindi_audio.wav")
 
     if not os.path.exists(translation_path):
-        raise FileNotFoundError(f"Translation not found: {translation_path}. Run 03_translate.py first.")
-    if not os.path.exists(speaker_wav):
-        raise FileNotFoundError(f"Speaker audio not found: {speaker_wav}. Run 01_extract_clip.py first.")
+        raise FileNotFoundError(f"Translation not found: {translation_path}. Run translate.py first.")
 
     with open(translation_path, encoding="utf-8") as f:
         hindi_text = f.read().strip()
 
     print(f"Hindi text to synthesize:\n  {hindi_text}\n")
 
+    voice = cfg.get("tts", {}).get("voice", "hi-IN-SwaraNeural")
+    print(f"Using voice: {voice}")
+
     generate_hindi_audio(
         hindi_text=hindi_text,
-        speaker_wav=speaker_wav,
         output_path=raw_hindi_wav,
-        model_name=cfg["tts"]["model_name"],
-        language=cfg["tts"]["language"]
+        voice=voice,
     )
 
     # Time-stretch Hindi audio to match original clip duration

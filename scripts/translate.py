@@ -40,10 +40,9 @@ def translate_indictrans2(text: str, src_lang: str, tgt_lang: str, model_name: s
 
 
 def translate_googletrans(text: str, tgt_lang: str) -> str:
-    from googletrans import Translator
-    translator = Translator()
-    result = translator.translate(text, dest=tgt_lang)
-    return result.text
+    from deep_translator import GoogleTranslator
+    translated = GoogleTranslator(source="en", target=tgt_lang).translate(text)
+    return translated
 
 
 def main():
