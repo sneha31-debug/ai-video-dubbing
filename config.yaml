@@ -1,47 +1,37 @@
-# Supernan AI Video Dubbing — Configuration
-
-source_video: "input/source_video.mp4"
-
-clip:
-  start_time: 15        # seconds from start of video
-  duration: 15          # seconds
-
-whisper:
-  model_size: "small"   # tiny / base / small / medium / large
-  language: "en"
-  device: "cuda"        # cuda or cpu
-
-translation:
-  source_lang: "eng_Latn"
-  target_lang: "hin_Deva"
-  target_lang_short: "hi"
-  use_indictrans2: true
-  indictrans2_model: "ai4bharat/indictrans2-en-indic-1B"
-
-tts:
-  model_name: "tts_models/multilingual/multi-dataset/xtts_v2"
-  language: "hi"
-
 audio:
-  time_stretch: true      # stretch Hindi audio to match clip duration
   max_stretch_factor: 1.3
   sample_rate: 22050
-
-wav2lip:
-  checkpoint: "Wav2Lip/checkpoints/wav2lip.pth"
-  resize_factor: 1
-  face_det_batch_size: 16
-  wav2lip_batch_size: 128
-
+  time_stretch: true
+clip:
+  duration: 10
+  start_time: 0
 gfpgan:
-  model_path: "GFPGAN/experiments/pretrained_models/GFPGANv1.4.pth"
+  arch: clean
+  model_path: GFPGAN/experiments/pretrained_models/GFPGANv1.4.pth
   upscale: 2
-  arch: "clean"
-
 output:
-  clips_dir: "output/clips"
-  audio_dir: "output/audio"
-  transcripts_dir: "output/transcripts"
-  translations_dir: "output/translations"
-  final_dir: "output/final"
-  final_filename: "hindi_dubbed_final.mp4"
+  audio_dir: output/audio
+  clips_dir: output/clips
+  final_dir: output/final
+  final_filename: hindi_dubbed_final.mp4
+  transcripts_dir: output/transcripts
+  translations_dir: output/translations
+source_video: input/test_video.mp4
+translation:
+  indictrans2_model: ai4bharat/indictrans2-en-indic-1B
+  source_lang: eng_Latn
+  target_lang: hin_Deva
+  target_lang_short: hi
+  use_indictrans2: false
+tts:
+  language: hi
+  model_name: tts_models/multilingual/multi-dataset/xtts_v2
+wav2lip:
+  checkpoint: Wav2Lip/checkpoints/wav2lip.pth
+  face_det_batch_size: 16
+  resize_factor: 1
+  wav2lip_batch_size: 128
+whisper:
+  device: cpu
+  language: en
+  model_size: tiny

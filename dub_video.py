@@ -88,17 +88,17 @@ Examples:
 
     # Import step functions lazily (avoids loading heavy models until needed)
     def step1():
-        from scripts.extract_clip import extract_clip, extract_audio
+        from scripts import extract_clip
         clip_path = os.path.join(cfg["output"]["clips_dir"], "clip.mp4")
         wav_path = os.path.join(cfg["output"]["audio_dir"], "clip_audio.wav")
-        extract_clip(cfg["source_video"], clip_path, cfg["clip"]["start_time"], cfg["clip"]["duration"])
-        extract_audio(clip_path, wav_path)
+        extract_clip.extract_clip(cfg["source_video"], clip_path, cfg["clip"]["start_time"], cfg["clip"]["duration"])
+        extract_clip.extract_audio(clip_path, wav_path)
 
     def step2():
-        from scripts.transcribe import transcribe
+        from scripts import transcribe
         import json
         audio_path = os.path.join(cfg["output"]["audio_dir"], "clip_audio.wav")
-        result = transcribe(audio_path, cfg["whisper"]["model_size"],
+        result = transcribe.transcribe(audio_path, cfg["whisper"]["model_size"],
                             cfg["whisper"]["language"], cfg["whisper"]["device"])
         out_dir = cfg["output"]["transcripts_dir"]
         os.makedirs(out_dir, exist_ok=True)
@@ -107,21 +107,29 @@ Examples:
         with open(os.path.join(out_dir, "transcript.txt"), "w", encoding="utf-8") as f:
             f.write(result["text"].strip())
 
+    # Common environment for subprocesses
+    env = os.environ.copy()
+    env["PYTHONPATH"] = os.getcwd()
+
     def step3():
         import subprocess
-        subprocess.run(["python", "scripts/03_translate.py", "--config", args.config], check=True)
+        subprocess.run(["python", "scripts/translate.py", "--config", args.config], 
+                       check=True, env=env)
 
     def step4():
         import subprocess
-        subprocess.run(["python", "scripts/04_voice_clone.py", "--config", args.config], check=True)
+        subprocess.run(["python", "scripts/voice_clone.py", "--config", args.config], 
+                       check=True, env=env)
 
     def step5():
         import subprocess
-        subprocess.run(["python", "scripts/05_lipsync.py", "--config", args.config], check=True)
+        subprocess.run(["python", "scripts/lipsync.py", "--config", args.config], 
+                       check=True, env=env)
 
     def step6():
         import subprocess
-        subprocess.run(["python", "scripts/06_face_restore.py", "--config", args.config], check=True)
+        subprocess.run(["python", "scripts/face_restore.py", "--config", args.config], 
+                       check=True, env=env)
 
     steps = {
         1: ("Extract clip & audio", step1, False),
