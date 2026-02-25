@@ -155,8 +155,3 @@ GFPGAN batch post-processing (parallel GPU)
 - Deploy a Gradio demo on Hugging Face Spaces
 
 ---
-
-## Submission
-
-Output video: `output/final/hindi_dubbed_final.mp4`  
-Email: ganesh@supernan.app | Subject: `Supernan AI Intern – [Your Name]`
