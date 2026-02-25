@@ -1,0 +1,50 @@
+# Supernan AI Video Dubbing Pipeline — Python Dependencies
+# Install: pip install -r requirements.txt
+
+# Core ML
+torch>=2.0.0
+torchaudio>=2.0.0
+torchvision>=0.15.0
+
+# Speech-to-text
+openai-whisper
+
+# Voice cloning
+TTS>=0.22.0
+
+# Translation
+googletrans==4.0.0rc1          # fallback
+sentencepiece                  # IndicTrans2 tokenizer dep
+sacremoses
+transformers>=4.30.0
+datasets
+accelerate
+
+# Audio processing
+librosa>=0.10.0
+soundfile>=0.12.1
+numpy>=1.24.0
+scipy>=1.10.0
+pydub>=0.25.1
+
+# Video processing
+opencv-python>=4.8.0
+ffmpeg-python>=0.2.0
+imageio>=2.31.0
+imageio-ffmpeg
+
+# GFPGAN deps (GFPGAN itself is installed via git in setup.sh)
+basicsr>=1.4.2
+facexlib>=0.3.0
+realesrgan
+
+# Utilities
+pyyaml>=6.0
+tqdm>=4.65.0
+click>=8.1.0
+requests>=2.31.0
+Pillow>=10.0.0
+
+# Notebook
+jupyter
+ipywidgets

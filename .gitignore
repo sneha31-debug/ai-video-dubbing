@@ -1,0 +1,59 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyc
+.Python
+*.egg-info/
+dist/
+build/
+*.egg
+.eggs/
+*.so
+
+# Virtual environments
+venv/
+.venv/
+env/
+ENV/
+
+# Jupyter
+.ipynb_checkpoints/
+*.ipynb_checkpoints
+
+# Project-specific: large binary files & downloaded models
+models/
+input/*.mp4
+input/*.mov
+input/*.avi
+output/
+
+# GFPGAN / Wav2Lip weights
+*.pth
+*.pkl
+*.onnx
+
+# Wav2Lip cloned repo
+Wav2Lip/
+GFPGAN/
+
+# Hugging Face cache
+.cache/
+
+# Environment variables / secrets
+.env
+*.env
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Logs
+*.log
+logs/
